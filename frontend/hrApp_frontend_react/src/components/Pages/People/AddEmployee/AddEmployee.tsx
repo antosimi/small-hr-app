@@ -14,11 +14,11 @@ import {
     FormLabel
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { employeeService, type Employee, type ManagerDTO } from "../../../../services/employeeService";
+import { employeeService, type CreateEmployee, type ManagerDTO } from "../../../../services/employeeService";
 import dayjs, { Dayjs } from "dayjs";
 
 
-export default function AddEmployee({ onAdd }: { onAdd: (employee: Employee) => void }) {
+export default function AddEmployee({ onAdd }: { onAdd: () => void }) {
     const [open, setOpen] = useState(false);
     const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -59,11 +59,11 @@ export default function AddEmployee({ onAdd }: { onAdd: (employee: Employee) => 
         setFormSubmitted(true);
 
         if (!firstName || !lastName || !email || !phone || !birthday || !jobTitle ||
-            !department  || !hiringDate || !startingDate) {
+            !department || !hiringDate || !startingDate) {
             return;
         }
 
-        const newEmployee: Employee = {
+        const newEmployee: CreateEmployee = {
             firstName,
             lastName,
             email,
@@ -71,7 +71,7 @@ export default function AddEmployee({ onAdd }: { onAdd: (employee: Employee) => 
             birthday: birthday.format("YYYY-MM-DD"),
             jobTitle,
             department,
-            manager: manager, // ID numeric
+            manager: manager,
             hiringDate: hiringDate.format("YYYY-MM-DD"),
             startingDate: startingDate.format("YYYY-MM-DD"),
             image: null,
@@ -85,12 +85,12 @@ export default function AddEmployee({ onAdd }: { onAdd: (employee: Employee) => 
             );
             if (imageFile) formData.append("image", imageFile);
 
-            const createdEmployee = await employeeService.add(formData);
-            onAdd(createdEmployee);
+            await employeeService.add(formData);
+            onAdd();
 
             handleClose();
 
-            // resetare form
+            // reset form
             setFirstName("");
             setLastName("");
             setEmail("");

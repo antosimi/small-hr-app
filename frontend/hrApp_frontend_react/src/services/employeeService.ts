@@ -1,7 +1,7 @@
 import client from "../client/client";
 
-export interface Employee {
-    id?: number;
+
+export type CreateEmployee = {
     firstName: string;
     lastName: string;
     email: string;
@@ -9,28 +9,43 @@ export interface Employee {
     birthday: string;
     jobTitle: string;
     department: string;
-    manager: string| null;
+    manager: string | null;
     hiringDate: string;
     startingDate: string;
     image?: string | null;
-}
+};
+
+export type Employee = CreateEmployee & {
+    id: number;
+};
 
 export interface ManagerDTO {
     id: number;
     fullName: string;
 }
 
+export type PagedResponse<T> = {
+    items: T[];
+    total: number;
+};
+
 export const employeeService = {
-    getAll: async (): Promise<Employee[]> => {
-        const response = await client.get("/employee/all");
+    getAll: async (page: number, size: number): Promise<PagedResponse<Employee>> => {
+        const response = await client.get("/employee/all", {
+            params: { page, size }
+        });
         return response.data;
     },
 
-    add: async (data: FormData): Promise<Employee> => {
-        const response = await client.post("/employee/create", data, {
+    add: async (data: FormData): Promise<void> => {
+        await client.post("/employee/create", data, {
             headers: { "Content-Type": "multipart/form-data" }
         });
-        return response.data;
+    },
+    deleteEmployees: async (selectedIds: number[]): Promise<void> => {
+        await client.delete("/employee/delete", {
+            data: selectedIds
+        });
     },
     getAllManagers: async (): Promise<ManagerDTO[]> => {
         const response = await client.get("/employee/managers/all");

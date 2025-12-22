@@ -37,11 +37,15 @@ services:
       - "9001:9001"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/hrApp_frontend_react:/app
+      - /app/node_modules
     depends_on:
       - backend
-    ports:
-      - "5173:80"
 
 volumes:
   db-data:

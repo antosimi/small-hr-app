@@ -3,7 +3,11 @@ package com.example.hrApp.service;
 import com.example.hrApp.dto.ManagerDTO;
 import com.example.hrApp.entity.Employee;
 import com.example.hrApp.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +24,9 @@ public class EmployeeService {
     }
 
 
-    public List<Employee> getAll() {
-        return repository.findAll();
+    public Page<Employee> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repository.findAll(pageable);
     }
 
 
@@ -30,8 +35,9 @@ public class EmployeeService {
     }
 
 
-    public Employee create(Employee e) {
-        return repository.save(e);
+    @Transactional
+    public void create(Employee e) {
+        repository.save(e);
     }
 
 
@@ -54,5 +60,13 @@ public class EmployeeService {
                 .stream()
                 .map(e -> new ManagerDTO(e.getId(), e.getFirstName() + " " + e.getLastName()))
                 .toList();
+    }
+
+    @Transactional
+    public void deleteEmployees(List<UUID> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("No employee IDs provided");
+        }
+        repository.deleteAllById(ids);
     }
 }
