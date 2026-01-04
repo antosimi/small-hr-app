@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,12 +23,6 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-
-
-//    @GetMapping("/all")
-//    public List<Employee> getAll() {
-//        return employeeService.getAll();
-//    }
 
     @GetMapping("/all")
     public ResponseEntity<PagedResponse<Employee>> getAll(
@@ -54,6 +49,7 @@ public class EmployeeController {
 
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
+    //@PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<Void> create(
             @RequestPart("employee") Employee employee,
             @RequestPart(value = "image", required = false) MultipartFile imageFile
@@ -86,6 +82,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEmployees(
             @RequestBody List<UUID> ids
     ) {

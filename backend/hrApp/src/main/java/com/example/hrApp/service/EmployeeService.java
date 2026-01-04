@@ -10,63 +10,101 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class EmployeeService {
 
-    private final EmployeeRepository repository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
     public EmployeeService(EmployeeRepository repository) {
-        this.repository = repository;
+        this.employeeRepository = repository;
     }
 
 
     public Page<Employee> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return repository.findAll(pageable);
+        return employeeRepository.findAll(pageable);
     }
 
 
     public Employee getById(UUID id) {
-        return repository.findById(id).orElse(null);
+        return employeeRepository.findById(id).orElse(null);
     }
 
 
     @Transactional
     public void create(Employee e) {
-        repository.save(e);
+        employeeRepository.save(e);
     }
 
 
     public Employee update(UUID id, Employee data) {
-        return repository.findById(id).map(existing -> {
+        return employeeRepository.findById(id).map(existing -> {
             existing.setFirstName(data.getFirstName());
             existing.setLastName(data.getLastName());
             existing.setEmail(data.getEmail());
-            return repository.save(existing);
+            return employeeRepository.save(existing);
         }).orElse(null);
     }
 
 
     public void delete(UUID id) {
-        repository.deleteById(id);
+        employeeRepository.deleteById(id);
     }
 
     public List<ManagerDTO> getAllManagers() {
-        return repository.findByJobTitleStartingWith("Manager")
+        return employeeRepository.findByJobTitleStartingWith("Manager")
                 .stream()
                 .map(e -> new ManagerDTO(e.getId(), e.getFirstName() + " " + e.getLastName()))
                 .toList();
     }
 
+    // SOFT DELETE
+    @Transactional
+    public void deactivateEmployees(List<UUID> ids ){
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("No employee IDs provided");
+        }
+        for(UUID id : ids) {
+
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Employee with ID " + id + " does not exist"));
+
+            employee.setDeletedAt(LocalDateTime.now());
+
+            if (employee.getLoginUser() != null) {
+                employee.getLoginUser().setEnabled(false);
+            }
+
+            employeeRepository.save(employee);
+        }
+    }
+
+    // HARD DELETE
     @Transactional
     public void deleteEmployees(List<UUID> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException("No employee IDs provided");
         }
-        repository.deleteAllById(ids);
+
+        for(UUID id : ids) {
+            Employee employee = employeeRepository.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Employee with ID " + id + " does not exist"));
+
+            boolean isSoftDeleted = employee.getDeletedAt() != null;
+            boolean isLoginDisabled = (employee.getLoginUser() == null) || !employee.getLoginUser().isEnabled();
+
+            if (isSoftDeleted && isLoginDisabled) {
+                employeeRepository.delete(employee);
+            } else {
+                throw new IllegalStateException("Can't delete a user that was not deactivated before.");
+            }
+        }
+
     }
+
 }

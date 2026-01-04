@@ -10,5 +10,5 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime
 FROM eclipse-temurin:17-jdk AS runtime
 WORKDIR /app
-COPY --from=build /app/target/hrApp-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+#COPY --from=build /app/target/hrApp-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-Dspring.devtools.restart.enabled=true", "-jar", "/app/target/hrApp-0.0.1-SNAPSHOT.jar"]

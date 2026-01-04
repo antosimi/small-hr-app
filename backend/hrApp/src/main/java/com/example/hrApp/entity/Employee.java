@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -46,12 +47,17 @@ public class Employee {
     @Column
     private String manager;
 
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    private LoginUser loginUser;
+
     @Column(nullable = false)
     private LocalDate hiringDate;
 
     @Column(nullable = false)
     private LocalDate startingDate;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Column(name = "image", columnDefinition = "BYTEA")
     private byte[] image;

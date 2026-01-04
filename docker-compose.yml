@@ -27,12 +27,16 @@ services:
     build:
       context: ./backend/hrApp
       dockerfile: Dockerfile
+    volumes:
+      - ./backend/hrApp:/app
+      - ./backend/hrApp/target:/app/target
     depends_on:
       - db
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/hr_app_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
     ports:
       - "9001:9001"
 

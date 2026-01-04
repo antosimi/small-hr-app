@@ -1,6 +1,8 @@
 package com.example.hrApp.repository;
 
 import com.example.hrApp.entity.Employee;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,6 @@ import java.util.UUID;
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
     List<Employee> findByJobTitleStartingWith(String prefix);
 
-//    @Query("SELECT e FROM Employee e WHERE e.jobTitle LIKE :prefix%")
-//    List<Employee> findManagers(@Param("prefix") String prefix);
+    @Query("SELECT e FROM Employee e WHERE e.deletedAt IS NULL")
+    Page<Employee> findAllActive(Pageable pageable);
 }
