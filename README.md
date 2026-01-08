@@ -36,7 +36,7 @@ HRAPP/
 From the project root:
 
 ```bash
-docker-compose up --build
+docker-compose up
 ```
 
 This will:

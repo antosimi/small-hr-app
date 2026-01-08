@@ -1,5 +1,6 @@
 package com.example.hrApp.configuration;
 
+import com.example.hrApp.security.JwtAuthenticationEntryPoint;
 import com.example.hrApp.security.JwtAuthenticationFilter;
 import com.example.hrApp.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService customUserDetailsService;
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
 
 
     @Bean
@@ -44,7 +46,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(unauthorizedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",

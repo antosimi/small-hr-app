@@ -5,3 +5,7 @@ body, html, #root {
   width: 100%;
   font-family: 'Roboto', sans-serif; /* fontul MUI */
 }
+#root {
+  display: block; /* Ensures that content flows normally after login */
+  overflow-x: hidden; /* Prevents horizontal scroll bars */
+}

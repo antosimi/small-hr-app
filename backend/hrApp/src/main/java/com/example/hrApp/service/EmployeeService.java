@@ -1,5 +1,6 @@
 package com.example.hrApp.service;
 
+import com.example.hrApp.dto.EmployeeDTO;
 import com.example.hrApp.dto.ManagerDTO;
 import com.example.hrApp.entity.Employee;
 import com.example.hrApp.repository.EmployeeRepository;
@@ -25,9 +26,19 @@ public class EmployeeService {
     }
 
 
-    public Page<Employee> getAll(int page, int size) {
+    public Page<EmployeeDTO> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return employeeRepository.findAll(pageable);
+        Page<Employee> employees = employeeRepository.findAll(pageable);
+
+        // Map the Entity to DTO
+        return employees.map(employee -> EmployeeDTO.builder()
+                .id(employee.getId())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
+                .email(employee.getEmail())
+                .jobTitle(employee.getJobTitle())
+                .department(employee.getDepartment())
+                .build());
     }
 
 

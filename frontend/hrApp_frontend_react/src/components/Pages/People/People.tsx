@@ -12,7 +12,7 @@ import {
     Checkbox,
     TablePagination
 } from "@mui/material";
-import { employeeService, type Employee } from "../../../services/employeeService";
+import { employeeService, type Employee, type EmployeeDTO } from "../../../services/employeeService";
 import AddEmployee from "./AddEmployee/AddEmployee";
 import DeleteEmployees from "./DeleteEmployees/DeleteEmployees";
 import { Snackbar, Alert } from "@mui/material";
@@ -22,11 +22,11 @@ export default function People() {
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
-    const [employees, setEmployees] = useState<Employee[]>([]);
+    const [employees, setEmployees] = useState<EmployeeDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [selectedIds, setSelectedIds] = useState<number[]>([]);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -60,7 +60,7 @@ export default function People() {
         setSelectedIds(checked ? employees.map(e => e.id) : []);
     };
 
-    const handleSelectOne = (id: number) => {
+    const handleSelectOne = (id: string) => {
         setSelectedIds(prev =>
             prev.includes(id)
                 ? prev.filter(x => x !== id)

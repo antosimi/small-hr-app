@@ -19,6 +19,15 @@ export type Employee = CreateEmployee & {
     id: number;
 };
 
+export type EmployeeDTO = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    jobTitle: string;
+    department: string;
+};
+
 export interface ManagerDTO {
     id: number;
     fullName: string;
@@ -30,7 +39,7 @@ export type PagedResponse<T> = {
 };
 
 export const employeeService = {
-    getAll: async (page: number, size: number): Promise<PagedResponse<Employee>> => {
+    getAll: async (page: number, size: number): Promise<PagedResponse<EmployeeDTO>> => {
         const response = await client.get("/employee/all", {
             params: { page, size }
         });
@@ -42,7 +51,7 @@ export const employeeService = {
             headers: { "Content-Type": "multipart/form-data" }
         });
     },
-    deleteEmployees: async (selectedIds: number[]): Promise<void> => {
+    deleteEmployees: async (selectedIds: string[]): Promise<void> => {
         await client.delete("/employee/delete", {
             data: selectedIds
         });

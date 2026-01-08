@@ -1,5 +1,6 @@
 package com.example.hrApp.controller;
 
+import com.example.hrApp.dto.EmployeeDTO;
 import com.example.hrApp.dto.ManagerDTO;
 import com.example.hrApp.dto.PagedResponse;
 import com.example.hrApp.entity.Employee;
@@ -25,11 +26,11 @@ public class EmployeeController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<PagedResponse<Employee>> getAll(
+    public ResponseEntity<PagedResponse<EmployeeDTO>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<Employee> pageResult = employeeService.getAll(page, size);
+        Page<EmployeeDTO> pageResult = employeeService.getAll(page, size);
 
         return ResponseEntity.ok(
                 new PagedResponse<>(

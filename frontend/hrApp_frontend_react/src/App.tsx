@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { CssBaseline, Box, Typography, Tabs, Tab, Container } from "@mui/material";
-import Header from './components/Header/Header';
-
-import './App.css'
-import EmployeePage from './components/Pages/EmployeePage/EmployeePage';
-import People from './components/Pages/People/People';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { CssBaseline } from "@mui/material";
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 
+import Header from './components/Header/Header';
+import EmployeePage from './components/Pages/EmployeePage/EmployeePage';
+import People from './components/Pages/People/People';
+import { authService } from './services/authService';
+import LoginPage from './components/Pages/Login/LoginPage';
 
 const theme = createTheme({
   palette: {
@@ -23,29 +23,46 @@ const theme = createTheme({
 dayjs.locale("en-gb");
 
 function App() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(authService.isAuthenticated());
   const [selectedMainTab, setSelectedMainTab] = useState(0);
 
 
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    authService.logout(); 
+    setIsLoggedIn(false);
+    setSelectedMainTab(0);
+  };
+
   return (
-          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
 
- 
+        {!isLoggedIn ? (
+          <LoginPage onLoginSuccess={handleLoginSuccess} />
+        ) : (
+          <>
+            <Header
+              selectedMainTab={selectedMainTab}
+              onChange={(_e, newVal) => setSelectedMainTab(newVal)}
+              onLogout={handleLogout}
+            />
 
-
-      <Header
-        selectedMainTab={selectedMainTab}
-        onChange={(_e, newVal) => setSelectedMainTab(newVal)}
-      />
-
-      {selectedMainTab === 0 && <div>Home Page</div>}
-      {selectedMainTab === 1 && <EmployeePage />} 
-      {selectedMainTab === 2 && <People/>}
-    </ThemeProvider>
+            <main style={{ padding: '20px' }}>
+              {selectedMainTab === 0 && <div>Bine ai venit la LuckyPeople!</div>}
+              {selectedMainTab === 1 && <EmployeePage />} 
+              {selectedMainTab === 2 && <People/>}
+            </main>
+          </>
+        )}
+      </ThemeProvider>
     </LocalizationProvider>
   );
 }
 
-
-export default App
+export default App;
