@@ -1,6 +1,8 @@
 package com.example.hrApp.service;
 
 
+import com.example.hrApp.entity.LoginUser;
+import com.example.hrApp.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -12,7 +14,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -23,10 +29,27 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private String EXPIRATION_TIME;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(LoginUser user) {
+        Map<String, Object> claims = new HashMap<>();
+
+        // Add the specific Employee info the frontend needs
+        if (user.getEmployee() != null) {
+            claims.put("id", user.getEmployee().getId().toString()); // Use Employee UUID
+            claims.put("firstName", user.getEmployee().getFirstName());
+            claims.put("lastName", user.getEmployee().getLastName());
+            claims.put("email", user.getEmployee().getEmail());
+        }
+
+        // Add roles so the frontend can handle permissions (e.g. Manager view)
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        claims.put("roles", roles);
+
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(EXPIRATION_TIME)))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();

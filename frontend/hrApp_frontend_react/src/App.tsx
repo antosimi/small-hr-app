@@ -11,6 +11,7 @@ import EmployeePage from './components/Pages/EmployeePage/EmployeePage';
 import People from './components/Pages/People/People';
 import { authService } from './services/authService';
 import LoginPage from './components/Pages/Login/LoginPage';
+import ManageCalendar from './components/Pages/ManageCalendarPage/ManageCalendar';
 
 const theme = createTheme({
   palette: {
@@ -57,6 +58,7 @@ function App() {
               {selectedMainTab === 0 && <div>Bine ai venit la LuckyPeople!</div>}
               {selectedMainTab === 1 && <EmployeePage />} 
               {selectedMainTab === 2 && <People/>}
+              {selectedMainTab === 3 && <ManageCalendar />}
             </main>
           </>
         )}

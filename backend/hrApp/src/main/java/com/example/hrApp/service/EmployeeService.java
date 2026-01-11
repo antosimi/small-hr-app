@@ -18,12 +18,9 @@ import java.util.UUID;
 @Service
 public class EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
-
     @Autowired
-    public EmployeeService(EmployeeRepository repository) {
-        this.employeeRepository = repository;
-    }
+    private  EmployeeRepository employeeRepository;
+
 
 
     public Page<EmployeeDTO> getAll(int page, int size) {

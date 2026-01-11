@@ -37,8 +37,10 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345678
       SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
     ports:
       - "9001:9001"
+      - "5005:5005"
 
   frontend:
     build:

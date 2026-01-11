@@ -81,6 +81,7 @@ export default function Header({ selectedMainTab, onChange, onLogout }: HeaderPr
                     <Tab label="Home" />
                     <Tab label="My Info" />
                     <Tab label="People" />
+                    <Tab label="Manage Calendar" />
                 </Tabs>
             </Box>
 
