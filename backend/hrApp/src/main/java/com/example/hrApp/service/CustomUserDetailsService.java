@@ -27,4 +27,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         return loginUserRepository.findByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("The user was not found or was disabled."));
     }
+
 }

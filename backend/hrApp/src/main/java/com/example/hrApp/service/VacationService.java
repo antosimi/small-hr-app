@@ -23,11 +23,9 @@ public class VacationService {
     private EmployeeRepository employeeRepository;
 
     public Vacation createRequest(VacationRequestDTO dto) {
-        // 1. Find the employee
         Employee emp = employeeRepository.findById(UUID.fromString(dto.getEmployeeId()))
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        // 2. Map DTO to Entity
         Vacation request = Vacation.builder()
                 .employeeId(UUID.fromString(dto.getEmployeeId()))
                 .employeeName(emp.getFirstName() + " " + emp.getLastName())

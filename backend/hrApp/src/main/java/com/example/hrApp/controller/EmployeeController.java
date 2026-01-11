@@ -1,10 +1,9 @@
 package com.example.hrApp.controller;
 
-import com.example.hrApp.dto.EmployeeDTO;
-import com.example.hrApp.dto.ManagerDTO;
-import com.example.hrApp.dto.PagedResponse;
+import com.example.hrApp.dto.*;
 import com.example.hrApp.entity.Employee;
 import com.example.hrApp.service.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -48,17 +47,25 @@ public class EmployeeController {
         return e != null ? ResponseEntity.ok(e) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<MyProfileDTO> getProfile(@PathVariable UUID id) {
+        try {
+            MyProfileDTO profile = employeeService.getProfileData(id);
+            return ResponseEntity.ok(profile);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @PostMapping(value = "/create", consumes = {"multipart/form-data"})
     //@PreAuthorize("hasAnyRole('ADMIN', 'HR')")
     public ResponseEntity<Void> create(
-            @RequestPart("employee") Employee employee,
+            @RequestPart("employee") EmployeeCreationDTO employee,
             @RequestPart(value = "image", required = false) MultipartFile imageFile
     ) throws Exception {
-        if (imageFile != null && !imageFile.isEmpty()) {
-            employee.setImage(imageFile.getBytes());
-        }
-         employeeService.create(employee);
+
+         employeeService.createEmployeeWithLogin(employee, imageFile);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -81,6 +88,7 @@ public class EmployeeController {
         employeeService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")

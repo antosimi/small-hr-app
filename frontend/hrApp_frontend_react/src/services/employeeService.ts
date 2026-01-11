@@ -1,7 +1,7 @@
 import client from "../client/client";
 
 
-export type CreateEmployee = {
+export type EmployeeCreationDTO = {
     firstName: string;
     lastName: string;
     email: string;
@@ -9,14 +9,26 @@ export type CreateEmployee = {
     birthday: string;
     jobTitle: string;
     department: string;
-    manager: string | null;
+    managerId: string | null;
     hiringDate: string;
     startingDate: string;
-    image?: string | null;
+    username: string,
+    password: string;        
+    roles: number[];
 };
 
-export type Employee = CreateEmployee & {
-    id: number;
+export type Employee = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    birthday: string;
+    jobTitle: string;
+    department: string;
+    managerId: string | null;
+    hiringDate: string;
+    startingDate: string;
 };
 
 export type EmployeeDTO = {
@@ -36,6 +48,20 @@ export interface ManagerDTO {
 export type PagedResponse<T> = {
     items: T[];
     total: number;
+};
+
+export type MyProfileDTO = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    jobTitle: string;
+    department: string;
+    managerName: string;
+    hiringDate: string;
+    startingDate: string;
+    image?: string;
 };
 
 export const employeeService = {
@@ -58,6 +84,16 @@ export const employeeService = {
     },
     getAllManagers: async (): Promise<ManagerDTO[]> => {
         const response = await client.get("/employee/managers/all");
+        return response.data;
+    },
+
+    getById: async (id: string): Promise<Employee> => {
+        const response = await client.get(`/employee/${id}`);
+        return response.data;
+    },
+
+    getProfile: async (id: string): Promise<MyProfileDTO> => {
+        const response = await client.get(`/employee/profile/${id}`);
         return response.data;
     },
 
